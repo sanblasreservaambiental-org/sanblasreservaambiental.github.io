@@ -1,2 +1,2 @@
 # sanblasreservaambiental.github.io
-san blas reserva ambiental github site
+sanblasreservaambiental.org page on github
