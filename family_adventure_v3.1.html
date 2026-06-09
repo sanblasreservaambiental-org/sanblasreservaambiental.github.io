@@ -299,17 +299,6 @@ function changeValue(id,delta){
   input.value=value;
 }
 
-/* VALIDACIÓN LIVE */
-
-document.getElementById("room").addEventListener("input", function(){
-  if(typeof roomTypes === "undefined") return;
-
-  const val = this.value;
-  document.getElementById("room-error").style.display =
-    roomTypes[val] ? "none":"block";
-});
-
-
 /* ENVÍO */
 document.getElementById("reservationForm").addEventListener("submit", function(e){
   e.preventDefault();
@@ -347,7 +336,23 @@ Room: ${room}${rlTag}`;
 
 /* INIT */
 document.addEventListener("DOMContentLoaded", () => {
+
   updateLanguage();
+
+  // VALIDACIÓN SEGURA
+  document.getElementById("room").addEventListener("input", function(){
+
+    if (typeof roomTypes === "undefined") {
+      console.error("roomTypes no cargado");
+      return;
+    }
+
+    const val = this.value;
+
+    document.getElementById("room-error").style.display =
+      roomTypes[val] ? "none" : "block";
+  });
+
 });
 
 
