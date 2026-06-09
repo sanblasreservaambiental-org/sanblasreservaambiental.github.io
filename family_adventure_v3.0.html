@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>San Blas Reserva Ambiental – Reservation</title>
+
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background:#f5f5f5;
+    margin:0;
+    padding:20px;
+    display:flex;
+    justify-content:center;
+  }
+  .card {
+    background:white;
+    padding:24px;
+    border-radius:14px;
+    max-width:420px;
+    width:100%;
+    box-shadow:0 8px 25px rgba(0,0,0,.1);
+  }
+  .logo {
+    width:160px;
+    display:block;
+    margin:0 auto 20px;
+  }
+  h2 {
+    text-align:center;
+    margin:0 0 20px;
+  }
+  label {
+    font-size:14px;
+    margin:10px 0 4px;
+    display:block;
+  }
+  select, input {
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:15px;
+    box-sizing:border-box;
+  }
+  button {
+    margin-top:20px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:999px;
+    background:#25D366;
+    color:#000;
+    font-weight:600;
+    font-size:16px;
+    cursor:pointer;
+  }
+  .lang-switch {
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:15px;
+  }
+  .lang-switch button {
+    background:#ddd;
+    border:none;
+    padding:6px 12px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .lang-switch button.active {
+    background:#25D366;
+    color:#000;
+    font-weight:600;
+  }
+  .info-text {
+    font-size:13px;
+    margin-top:15px;
+    background:#f0f0f0;
+    padding:10px;
+    border-radius:8px;
+    line-height:1.4;
+  }
+</style>
+</head>
+
+<body>
+<div class="card">
+
+  <!-- LOGO -->
+  <img src="images/SAN BLAS RESERVA AMBIENTAL LOGO-optimized.webp" class="logo" alt="San Blas Reserva Ambiental">
+
+  <!-- SELECTOR DE IDIOMA -->
+  <div class="lang-switch">
+    <button id="btn-es" class="active">ES</button>
+    <button id="btn-en">EN</button>
+  </div>
+
+  <h2 id="title">Reserva</h2>
+
+  <!-- FORMULARIO -->
+  <form id="reservationForm">
+
+    <label id="label-family">Familia</label>
+    <input type="text" id="family" placeholder="Ej: García" required>
+
+    <label id="label-day">Día</label>
+    <select id="day" required></select>
+
+    <label id="label-adults">Adultos</label>
+    <input type="number" id="adults" min="1" value="2" required>
+
+    <label id="label-kids">Niños</label>
+    <input type="number" id="kids" min="0" value="0" required>
+
+    <label id="label-room">Número de habitación</label>
+    <select id="room" required></select>
+
+    <div id="info" class="info-text">
+      Las visitas guiadas se ofrecen de martes a sábado a las 09:30 AM. 
+      Punto de encuentro: segunda planta del edificio principal. 
+      Traiga agua y zapatos cerrados.
+    </div>
+
+    <button type="submit" id="send-btn">Enviar por WhatsApp</button>
+  </form>
+</div>
+
+<script>
+/* --------------------------
+   1. LISTA DE HABITACIONES
+---------------------------*/
+const roomTypes = {
+  30:"ROYAL",31:"ROYAL",32:"ROYAL",33:"ROYAL",34:"ROYAL",35:"ROYAL",36:"ROYAL",
+  37:"REGULAR",38:"REGULAR",39:"REGULAR",40:"REGULAR",49:"REGULAR",50:"REGULAR",
+  51:"REGULAR",52:"REGULAR",53:"REGULAR",54:"REGULAR",
+  55:"ROYAL",56:"ROYAL",57:"ROYAL",58:"ROYAL",
+  59:"REGULAR",60:"REGULAR",61:"REGULAR",62:"REGULAR",
+  77:"REGULAR",78:"REGULAR",79:"REGULAR",80:"REGULAR",81:"REGULAR",82:"REGULAR",
+  83:"REGULAR",84:"REGULAR",85:"REGULAR",86:"REGULAR",87:"REGULAR",88:"REGULAR",
+  89:"REGULAR",90:"REGULAR",
+  91:"ROYAL",92:"ROYAL",93:"ROYAL",94:"ROYAL",95:"ROYAL",96:"ROYAL",
+  97:"REGULAR",98:"REGULAR",
+  118:"REGULAR",119:"REGULAR",120:"REGULAR",121:"REGULAR",122:"REGULAR",
+  123:"REGULAR",124:"REGULAR",125:"REGULAR",126:"REGULAR",127:"REGULAR",
+  128:"REGULAR",129:"REGULAR",
+  130:"ROYAL",131:"ROYAL",132:"ROYAL",133:"ROYAL",134:"ROYAL",135:"ROYAL",
+  136:"ROYAL",
+  137:"REGULAR",138:"REGULAR",139:"REGULAR",140:"REGULAR",141:"REGULAR",
+  149:"REGULAR",150:"REGULAR",
+  151:"ROYAL",152:"ROYAL",153:"ROYAL",154:"ROYAL",155:"ROYAL",156:"ROYAL",
+  157:"ROYAL",158:"ROYAL",
+  159:"REGULAR",160:"REGULAR",161:"REGULAR",162:"REGULAR",
+  169:"REGULAR",170:"REGULAR",171:"REGULAR",172:"REGULAR",173:"REGULAR",
+  174:"REGULAR",175:"REGULAR",176:"REGULAR",177:"REGULAR",178:"REGULAR",
+  179:"REGULAR",180:"REGULAR",181:"REGULAR",182:"REGULAR",183:"REGULAR",
+  184:"REGULAR",185:"REGULAR",186:"REGULAR",187:"REGULAR",188:"REGULAR",
+  189:"REGULAR",190:"REGULAR",
+  191:"ROYAL",192:"ROYAL",193:"ROYAL",194:"ROYAL",195:"ROYAL",196:"ROYAL",
+  197:"REGULAR",198:"REGULAR",
+  208:"REGULAR",209:"REGULAR",210:"REGULAR",211:"REGULAR",212:"REGULAR",
+  213:"REGULAR",214:"REGULAR",215:"REGULAR",216:"REGULAR",217:"REGULAR",
+  218:"REGULAR",219:"REGULAR",220:"REGULAR",221:"REGULAR",222:"REGULAR",
+  223:"REGULAR",224:"REGULAR",225:"REGULAR",226:"REGULAR",227:"REGULAR",
+  228:"REGULAR",229:"REGULAR",
+  230:"ROYAL",231:"ROYAL",232:"ROYAL",233:"ROYAL",234:"ROYAL",235:"ROYAL",
+  236:"ROYAL",
+  237:"REGULAR",238:"REGULAR",239:"REGULAR",240:"REGULAR",241:"REGULAR",
+  245:"REGULAR",246:"REGULAR",247:"REGULAR",248:"REGULAR",249:"REGULAR",
+  250:"REGULAR",251:"REGULAR",252:"REGULAR",253:"REGULAR",254:"REGULAR",
+  255:"REGULAR",256:"REGULAR",257:"REGULAR",258:"REGULAR",259:"REGULAR",
+  260:"REGULAR",261:"REGULAR",262:"REGULAR",263:"REGULAR",264:"REGULAR",
+  265:"REGULAR",266:"REGULAR",267:"REGULAR",268:"REGULAR",269:"REGULAR",
+  270:"REGULAR",271:"REGULAR",272:"REGULAR",273:"REGULAR",274:"REGULAR",
+  275:"REGULAR",276:"REGULAR",277:"REGULAR",278:"REGULAR",279:"REGULAR",
+  280:"REGULAR",281:"REGULAR",282:"REGULAR",283:"REGULAR",284:"REGULAR",
+  285:"REGULAR",286:"REGULAR",287:"REGULAR",288:"REGULAR",289:"REGULAR",
+  290:"REGULAR",
+  291:"ROYAL",292:"ROYAL",293:"ROYAL",294:"ROYAL",295:"ROYAL",296:"ROYAL",
+  297:"REGULAR",298:"REGULAR",
+  301:"REGULAR",302:"REGULAR",303:"REGULAR",304:"REGULAR",305:"REGULAR",
+  306:"REGULAR",307:"REGULAR",308:"REGULAR",309:"REGULAR",310:"REGULAR",
+  311:"REGULAR",312:"REGULAR",313:"REGULAR",314:"REGULAR",315:"REGULAR",
+  316:"REGULAR",317:"REGULAR",318:"REGULAR",319:"REGULAR",320:"REGULAR",
+  321:"REGULAR",322:"REGULAR",323:"REGULAR",324:"REGULAR",325:"REGULAR",
+  326:"REGULAR",327:"REGULAR",328:"REGULAR",329:"REGULAR",
+  330:"ROYAL",331:"ROYAL",332:"ROYAL",333:"ROYAL",334:"ROYAL",335:"ROYAL",
+  336:"ROYAL",
+  337:"REGULAR",338:"REGULAR",339:"REGULAR",340:"REGULAR",341:"REGULAR",
+  342:"REGULAR",343:"REGULAR",344:"REGULAR",345:"REGULAR",346:"REGULAR",
+  347:"REGULAR",348:"REGULAR",349:"REGULAR",350:"REGULAR",351:"REGULAR",
+  352:"REGULAR",353:"REGULAR",354:"REGULAR",355:"REGULAR",356:"REGULAR",
+  357:"REGULAR",358:"REGULAR",359:"REGULAR",360:"REGULAR",361:"REGULAR",
+  362:"REGULAR",363:"REGULAR",364:"REGULAR",365:"REGULAR",366:"REGULAR",
+  367:"REGULAR",368:"REGULAR",369:"REGULAR",370:"REGULAR",371:"REGULAR",
+  372:"REGULAR",373:"REGULAR",374:"REGULAR",375:"REGULAR",376:"REGULAR",
+  377:"REGULAR",378:"REGULAR",379:"REGULAR",380:"REGULAR",381:"REGULAR",
+  382:"REGULAR",383:"REGULAR",384:"REGULAR",
+  401:"REGULAR",402:"REGULAR",403:"REGULAR",404:"REGULAR",405:"REGULAR",
+  406:"REGULAR",407:"REGULAR",408:"REGULAR",409:"REGULAR",410:"REGULAR",
+  411:"REGULAR",412:"REGULAR",413:"REGULAR",414:"REGULAR",415:"REGULAR",
+  416:"REGULAR",417:"REGULAR",418:"REGULAR",419:"REGULAR",420:"REGULAR",
+  421:"REGULAR",422:"REGULAR",423:"REGULAR",424:"REGULAR",425:"REGULAR",
+  426:"REGULAR",
+  442:"ROYAL",
+  443:"REGULAR",444:"REGULAR",445:"REGULAR",446:"REGULAR",447:"REGULAR",
+  448:"REGULAR",449:"REGULAR",450:"REGULAR",451:"REGULAR",452:"REGULAR",
+  454:"REGULAR",455:"REGULAR",456:"REGULAR",457:"REGULAR",458:"REGULAR",
+  459:"REGULAR",460:"REGULAR",461:"REGULAR",462:"REGULAR",463:"REGULAR",
+  464:"REGULAR",465:"REGULAR",466:"REGULAR",467:"REGULAR",468:"REGULAR",
+  501:"REGULAR",502:"REGULAR",503:"REGULAR",504:"REGULAR",505:"REGULAR",
+  506:"REGULAR",507:"REGULAR",508:"REGULAR",509:"REGULAR",510:"REGULAR",
+  511:"REGULAR",
+  542:"ROYAL",543:"ROYAL",544:"ROYAL",545:"ROYAL",546:"ROYAL",547:"ROYAL",
+  548:"ROYAL",
+  549:"REGULAR",550:"REGULAR",
+  600:"REGULAR",601:"REGULAR",602:"REGULAR",603:"REGULAR",604:"REGULAR",
+  605:"REGULAR",606:"REGULAR",607:"REGULAR",
+  642:"ROYAL",643:"ROYAL",644:"ROYAL",
+  3001:"REGULAR",3002:"REGULAR",3003:"REGULAR",3004:"REGULAR",
+  6001:"ROYAL",6002:"ROYAL",6003:"ROYAL",6004:"ROYAL",6005:"ROYAL",
+  6006:"REGULAR",6007:"REGULAR"
+};
+
+/* --------------------------
+   2. IDIOMAS
+---------------------------*/
+let lang = "es";
+
+const days = {
+  es: ["Martes","Miércoles","Jueves","Viernes","Sábado"],
+  en: ["Tuesday","Wednesday","Thursday","Friday","Saturday"]
+};
+
+const texts = {
+  es: {
+    title: "Reserva",
+    family: "Familia",
+    day: "Día",
+    adults: "Adultos",
+    kids: "Niños",
+    room: "Número de habitación",
+    info: "Las visitas guiadas se ofrecen de martes a sábado a las 09:30 AM. Punto de encuentro: segunda planta del edificio principal. Traiga agua y zapatos cerrados.",
+    send: "Enviar por WhatsApp"
+  },
+  en: {
+    title: "Reservation",
+    family: "Family name",
+    day: "Day",
+    adults: "Adults",
+    kids: "Kids",
+    room: "Room number",
+    info: "Guided tours are offered Tuesday to Saturday at 09:30 AM. Meeting point: second floor of the main building. Bring water and closed shoes.",
+    send: "Send via WhatsApp"
+  }
+};
+
+function updateLanguage() {
+  document.getElementById("title").textContent = texts[lang].title;
+  document.getElementById("label-family").textContent = texts[lang].family;
+  document.getElementById("label-day").textContent = texts[lang].day;
+  document.getElementById("label-adults").textContent = texts[lang].adults;
+  document.getElementById("label-kids").textContent = texts[lang].kids;
+  document.getElementById("label-room").textContent = texts[lang].room;
+  document.getElementById("info").textContent = texts[lang].info;
+  document.getElementById("send-btn").textContent = texts[lang].send;
+
+  const daySelect = document.getElementById("day");
+  daySelect.innerHTML = "";
+  days[lang].forEach(d => {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d;
+    daySelect.appendChild(opt);
+  });
+
+  document.getElementById("btn-es").classList.toggle("active", lang === "es");
+  document.getElementById("btn-en").classList.toggle("active", lang === "en");
+}
+
+document.getElementById("btn-es").onclick = () => { lang = "es"; updateLanguage(); };
+document.getElementById("btn-en").onclick = () => { lang = "en"; updateLanguage(); };
+
+updateLanguage();
+
+/* --------------------------
+   3. DESPLEGABLE DE HABITACIONES
+---------------------------*/
+const roomSelect = document.getElementById("room");
+Object.keys(roomTypes).forEach(num => {
+  const opt = document.createElement("option");
+  opt.value = num;
+  opt.textContent = num;
+  roomSelect.appendChild(opt);
+});
+
+/* --------------------------
+   4. ENVÍO A WHATSAPP
+---------------------------*/
+document.getElementById("reservationForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const family = document.getElementById("family").value;
+  const day = document.getElementById("day").value;
+  const adults = document.getElementById("adults").value;
+  const kids = document.getElementById("kids").value;
+  const room = document.getElementById("room").value;
+
+  const phone = "34922097040"; // CAMBIA ESTO
+
+  const roomCategory = roomTypes[room] || "UNKNOWN";
+
+  const messageES =
+`Solicitud de reserva:
+Familia: ${family}
+Día: ${day}
+Adultos: ${adults}
+Niños: ${kids}
+Habitación: ${room} (${roomCategory})`;
+
+  const messageEN =
+`Reservation request:
+Family: ${family}
+Day: ${day}
+Adults: ${adults}
+Kids: ${kids}
+Room: ${room} (${roomCategory})`;
+
+  const finalMessage = lang === "es" ? messageES : messageEN;
+  const encoded = encodeURIComponent(finalMessage);
+
+  window.location.href = `https://wa.me/${phone}?text=${encoded}`;
+});
+</script>
+
+</body>
+</html>
