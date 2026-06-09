@@ -206,9 +206,7 @@ button {
 <label id="label-room"></label>
 <input type="number" id="room" min="30" max="7000" placeholder="Ej: 123" required>
 
-<div id="room-error" style="display:none;color:red;font-size:12px;">
-  Habitación no válida
-</div>
+<div id="room-error" style="display:none;color:red;font-size:12px;"></div>
 
 <div id="info" class="info-text"></div>
 
@@ -235,8 +233,10 @@ const texts = {
     adults:"Adultos",
     kids:"Niños",
     room:"Número de habitación",
-    info:"Visitas guiadas 09:30. Punto de encuentro: planta 2.",
+    info:"Visitas guiadas 09:30. Punto de encuentro: planta 2 edificio principal.",
     send:"Enviar por WhatsApp"
+    roomError: "Habitación no válida",
+    requiredError: "Por favor complete todos los campos"
   },
   en:{
     title:"Reservation",
@@ -245,9 +245,12 @@ const texts = {
     adults:"Adults",
     kids:"Kids",
     room:"Room number",
-    info:"Guided tours at 09:30. Meeting point: 2nd floor.",
+    info:"Guided tours at 09:30. Meeting point: 2nd floor main building.",
     send:"Send via WhatsApp"
+    roomError: "Invalid room number",
+    requiredError: "Please fill in all fields"
   }
+
 };
 
 
@@ -277,6 +280,10 @@ function updateLanguage(){
   }
 
   updateCarouselText();
+
+  document.getElementById("btn-es").classList.toggle("active", lang === "es");
+  document.getElementById("btn-en").classList.toggle("active", lang === "en");
+  document.getElementById("room-error").textContent = texts[lang].roomError;
 }
 
 
@@ -319,10 +326,19 @@ document.getElementById("reservationForm").addEventListener("submit", function(e
   const kids = document.getElementById("kids").value;
   const room = document.getElementById("room").value;
 
+  // CAMPOS VACÍOS
+  if (!family || !day || !adults || !kids || !room) {
+    alert(texts[lang].requiredError);
+    return;
+  }
+
+  // HABITACIÓN
   if(!roomTypes[room]){
     document.getElementById("room-error").style.display="block";
     return;
   }
+
+  document.getElementById("room-error").style.display="none";
 
   const rlTag = roomTypes[room] === "ROYAL" ? " RL" : "";
 
