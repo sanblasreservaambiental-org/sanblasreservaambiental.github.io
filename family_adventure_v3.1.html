@@ -249,26 +249,35 @@ const texts = {
   }
 };
 
-function updateLanguage(){
-  document.getElementById("title").textContent=texts[lang].title;
-  document.getElementById("label-family").textContent=texts[lang].family;
-  document.getElementById("label-day").textContent=texts[lang].day;
-  document.getElementById("label-adults").textContent=texts[lang].adults;
-  document.getElementById("label-kids").textContent=texts[lang].kids;
-  document.getElementById("label-room").textContent=texts[lang].room;
-  document.getElementById("info").textContent=texts[lang].info;
-  document.getElementById("send-btn").textContent=texts[lang].send;
 
-  const daySelect=document.getElementById("day");
-  daySelect.innerHTML="";
-  days[lang].forEach(d=>{
-    const opt=document.createElement("option");
-    opt.textContent=d;
-    daySelect.appendChild(opt);
-  });
+function safeSet(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function updateLanguage(){
+  safeSet("title", texts[lang].title);
+  safeSet("label-family", texts[lang].family);
+  safeSet("label-day", texts[lang].day);
+  safeSet("label-adults", texts[lang].adults);
+  safeSet("label-kids", texts[lang].kids);
+  safeSet("label-room", texts[lang].room);
+  safeSet("info", texts[lang].info);
+  safeSet("send-btn", texts[lang].send);
+
+  const daySelect = document.getElementById("day");
+  if (daySelect) {
+    daySelect.innerHTML = "";
+    days[lang].forEach(d => {
+      const opt = document.createElement("option");
+      opt.textContent = d;
+      daySelect.appendChild(opt);
+    });
+  }
 
   updateCarouselText();
 }
+
 
 /* BOTONES IDIOMA */
 document.getElementById("btn-es").onclick=()=>{lang="es";updateLanguage();};
