@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>San Blas Reserva Ambiental – Reservation</title>
+
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background:#f5f5f5;
+    margin:0;
+    padding:20px;
+    display:flex;
+    justify-content:center;
+  }
+  .card {
+    background:white;
+    padding:24px;
+    border-radius:14px;
+    max-width:420px;
+    width:100%;
+    box-shadow:0 8px 25px rgba(0,0,0,.1);
+  }
+  .logo {
+    width:140px;
+    display:block;
+    margin:0 auto 20px;
+  }
+  h2 {
+    text-align:center;
+    margin:0 0 20px;
+  }
+  label {
+    font-size:14px;
+    margin:10px 0 4px;
+    display:block;
+  }
+  select, input {
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:15px;
+    box-sizing:border-box;
+  }
+  button {
+    margin-top:20px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:999px;
+    background:#25D366;
+    color:#000;
+    font-weight:600;
+    font-size:16px;
+    cursor:pointer;
+  }
+  .lang-switch {
+    text-align:center;
+    margin-bottom:15px;
+  }
+  .lang-switch button {
+    background:#ddd;
+    border:none;
+    padding:6px 12px;
+    margin:0 5px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .lang-switch button.active {
+    background:#25D366;
+    color:#000;
+    font-weight:600;
+  }
+</style>
+</head>
+
+<body>
+<div class="card">
+
+  <!-- LOGO -->
+  <img src="images/SAN BLAS RESERVA AMBIENTAL LOGO-optimized.webp" class="logo" alt="San Blas Reserva Ambiental">
+
+  <!-- SELECTOR DE IDIOMA -->
+  <div class="lang-switch">
+    <button id="btn-es" class="active">ES</button>
+    <button id="btn-en">EN</button>
+  </div>
+
+  <h2 id="title">Reserva</h2>
+
+  <!-- FORMULARIO -->
+  <form id="reservationForm">
+
+    <label id="label-day">Día</label>
+    <select id="day">
+      <option value="Tuesday">Martes / Tuesday</option>
+      <option value="Wednesday">Miércoles / Wednesday</option>
+      <option value="Thursday">Jueves / Thursday</option>
+      <option value="Friday">Viernes / Friday</option>
+      <option value="Saturday">Sábado / Saturday</option>
+    </select>
+
+    <label id="label-adults">Adultos</label>
+    <input type="number" id="adults" min="1" value="2">
+
+    <label id="label-kids">Niños</label>
+    <input type="number" id="kids" min="0" value="0">
+
+    <label id="label-room">Número de habitación</label>
+    <input type="text" id="room" placeholder="Ej: 12B">
+
+    <button type="submit" id="send-btn">Enviar por WhatsApp</button>
+  </form>
+</div>
+
+<script>
+let lang = "es";
+
+const texts = {
+  es: {
+    title: "Reserva",
+    day: "Día",
+    adults: "Adultos",
+    kids: "Niños",
+    room: "Número de habitación",
+    send: "Enviar por WhatsApp"
+  },
+  en: {
+    title: "Reservation",
+    day: "Day",
+    adults: "Adults",
+    kids: "Kids",
+    room: "Room number",
+    send: "Send via WhatsApp"
+  }
+};
+
+function updateLanguage() {
+  document.getElementById("title").textContent = texts[lang].title;
+  document.getElementById("label-day").textContent = texts[lang].day;
+  document.getElementById("label-adults").textContent = texts[lang].adults;
+  document.getElementById("label-kids").textContent = texts[lang].kids;
+  document.getElementById("label-room").textContent = texts[lang].room;
+  document.getElementById("send-btn").textContent = texts[lang].send;
+
+  document.getElementById("btn-es").classList.toggle("active", lang === "es");
+  document.getElementById("btn-en").classList.toggle("active", lang === "en");
+}
+
+document.getElementById("btn-es").onclick = () => { lang = "es"; updateLanguage(); };
+document.getElementById("btn-en").onclick = () => { lang = "en"; updateLanguage(); };
+
+document.getElementById("reservationForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const day = document.getElementById("day").value;
+  const adults = document.getElementById("adults").value;
+  const kids = document.getElementById("kids").value;
+  const room = document.getElementById("room").value;
+
+  const phone = "34922097040"; // CAMBIA ESTO
+
+  const messageES =
+`Solicitud de reserva:
+Día: ${day}
+Adultos: ${adults}
+Niños: ${kids}
+Habitación: ${room}`;
+
+  const messageEN =
+`Reservation request:
+Day: ${day}
+Adults: ${adults}
+Kids: ${kids}
+Room: ${room}`;
+
+  const finalMessage = lang === "es" ? messageES : messageEN;
+  const encoded = encodeURIComponent(finalMessage);
+
+  window.location.href = `https://wa.me/${phone}?text=${encoded}`;
+});
+</script>
+
+</body>
+</html>
