@@ -219,7 +219,7 @@ button {
 <input type="text" id="family" required>
 
 <label id="label-day"></label>
-
+<div id="day-header" class="day-grid"></div>
 <div id="day-buttons" class="day-grid"></div>
 
 
@@ -398,6 +398,8 @@ Room: ${room}${rlTag}`;
 document.addEventListener("DOMContentLoaded", () => {
 
   updateLanguage();
+  generateDayHeader();
+  generateDayButtons();
 
   // VALIDACIÓN SEGURA
   document.getElementById("room").addEventListener("input", function(){
@@ -423,6 +425,20 @@ const dayNames = {
   en: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
 };
 
+function generateDayHeader() {
+  const header = document.getElementById("day-header");
+  header.innerHTML = "";
+
+  dayNames[lang].forEach(name => {
+    const div = document.createElement("div");
+    div.className = "day-btn disabled"; // estilo uniforme
+    div.style.cursor = "default";
+    div.textContent = name;
+    header.appendChild(div);
+  });
+}
+
+
 function generateDayButtons() {
   const container = document.getElementById("day-buttons");
   container.innerHTML = "";
@@ -442,9 +458,8 @@ function generateDayButtons() {
 
     const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
 
-    const label = `${dayNames[selectedLang][dayIndex]} ${date.getDate()}/${date.getMonth()+1}`;
+    btn.textContent = `${date.getDate()}/${date.getMonth()+1}`;
 
-    btn.textContent = label;
 
     if (!disabled) {
       btn.onclick = () => {
@@ -463,11 +478,12 @@ function generateDayButtons() {
     const d = new Date(today);
     d.setDate(today.getDate() + mondayOffset + i);
 
-    const weekday = d.getDay(); // 0=Dom, 1=Lun, 2=Mar...
+    const weekday = d.getDay(); // 0=Dom, 1=Lun
     const isPast = d < new Date(today.toDateString());
-    const isClosed = (weekday === 0 || weekday === 1); // Dom o Lun
+    const isClosed = (weekday === 0 || weekday === 1);
 
     createButton(d, isPast || isClosed);
+
   }
 
   // Semana próxima (Lunes–Domingo)
@@ -487,6 +503,7 @@ function generateDayButtons() {
 const originalUpdateLanguage = updateLanguage;
 updateLanguage = function() {
   originalUpdateLanguage();
+  generateDayHeader();
   generateDayButtons();
 };
 
