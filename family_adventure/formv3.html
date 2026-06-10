@@ -156,13 +156,18 @@ button {
 
 .day-btn {
   width: 100%;
+  min-width: 0;              /* ← permite encoger */
   padding: 6px;
   border-radius: 6px;
   border: 1px solid #ccc;
   background: white;
   text-align: center;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;           /* ← más compacto */
+  white-space: normal;       /* ← permite saltos de línea */
+  word-break: break-word;    /* ← evita desbordes */
+  line-height: 1.1;          /* ← más compacto aún */
+  padding: 4px 2px;          /* ← cabe mejor */
 }
 
 .day-btn.active {
@@ -176,6 +181,7 @@ button {
   color: #888;
   cursor: not-allowed;
 }
+
 
 </style>
 </head>
