@@ -150,31 +150,40 @@ button {
 .day-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;               /* más compacto */
-  margin-bottom: 4px;     /* menos espacio entre filas */
+  gap: 2px;               /* reduce espacio entre columnas y filas */
+  margin-bottom: 0;       /* elimina separación extra */
+}
+
+#day-header {
+  margin-bottom: 0;       /* cabecera pegada a la primera fila */
+}
+
+#day-buttons {
+  row-gap: 2px;           /* compacta verticalmente las semanas */
 }
 
 .day-btn {
   width: 100%;
   min-width: 0;
-  padding: 4px 2px;       /* más compacto */
+  padding: 6px;           /* tu tamaño original */
   border-radius: 6px;
   border: 1px solid #ccc;
   background: white;
   text-align: center;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;        /* tu tamaño original */
   white-space: normal;
   word-break: break-word;
-  line-height: 1.1;
+  line-height: 1.1;       /* compacto pero sin deformar */
 }
 
 #day-header .day-btn {
   background: transparent;
   border: none;
   cursor: default;
-  font-size: 11px;        /* cabecera más pequeña */
   font-weight: 600;
+  padding: 0;
+  line-height: 1;
 }
 
 .day-btn.active {
@@ -188,6 +197,7 @@ button {
   color: #888;
   cursor: not-allowed;
 }
+
 
 
 
