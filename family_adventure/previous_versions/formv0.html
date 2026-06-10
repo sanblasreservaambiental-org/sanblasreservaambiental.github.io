@@ -146,92 +146,6 @@ button {
   padding:10px;
   border-radius:8px;
 }
-
-.day-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;               /* reduce espacio entre columnas y filas */
-  margin-bottom: 0;       /* elimina separación extra */
-}
-
-#day-header {
-  margin: 0 !important;
-  margin-bottom: 2;       /* cabecera pegada a la primera fila */
-}
-
-#day-buttons {
-  row-gap: 2px;           /* compacta verticalmente las semanas */
-}
-
-.day-btn {
-  margin: 0 !important;
-  width: 100%;
-  min-width: 0;
-  padding: 6px;           /* tu tamaño original */
-  border-radius: 6px;
-  border: 1px solid #d4c8b8; /* gris cálido */
-  background: white;
-  text-align: center;
-  cursor: pointer;
-  font-size: 14px;        /* tu tamaño original */
-  white-space: normal;
-  word-break: break-word;
-  line-height: 1.1;       /* compacto pero sin deformar */
-}
-
-#day-header .day-btn {
-  background: transparent;
-  border: none;
-  cursor: default;
-  font-weight: 600;
-  padding: 0;
-  line-height: 1;
-}
-
-.day-btn.active {
-  background: #25D366;
-  border-color: #1ea955;
-  color: #000;
-  font-weight: 600;
-}
-
-.day-btn.disabled {
-  background: #e0e0e0;
-  color: #888;
-  cursor: not-allowed;
-}
-
-#day-header,
-#day-buttons {
-  background: #F5F0E6;
-  padding: 8px;
-  border-radius: 8px;
-}
-
-input, select, textarea {
-  background: #F5F0E6;
-  border: 1px solid #d4c8b8;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 15px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-#label-day {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 4px;
-  color: #2A4E6E; /* azul San Blas */
-}
-
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #25D366;
-  background: #fff;
-}
-
 </style>
 </head>
 
@@ -273,9 +187,7 @@ input:focus, select:focus, textarea:focus {
 <input type="text" id="family" required>
 
 <label id="label-day"></label>
-<div id="day-header" class="day-grid"></div>
-<div id="day-buttons" class="day-grid"></div>
-
+<select id="day"></select>
 
 <label id="label-adults"></label>
 <div class="counter">
@@ -409,7 +321,7 @@ document.getElementById("reservationForm").addEventListener("submit", function(e
   e.preventDefault();
 
   const family = document.getElementById("family").value;
-  const day = window.selectedDayFormatted;
+  const day = document.getElementById("day").value;
   const adults = document.getElementById("adults").value;
   const kids = document.getElementById("kids").value;
   const room = document.getElementById("room").value;
@@ -452,8 +364,6 @@ Room: ${room}${rlTag}`;
 document.addEventListener("DOMContentLoaded", () => {
 
   updateLanguage();
-  generateDayHeader();
-  generateDayButtons();
 
   // VALIDACIÓN SEGURA
   document.getElementById("room").addEventListener("input", function(){
@@ -473,107 +383,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 </script>
-<script>
-const dayNames = {
-  es: ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"],
-  en: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
-};
-
-function generateDayHeader() {
-  const header = document.getElementById("day-header");
-  header.innerHTML = "";
-
-  dayNames[lang].forEach(name => {
-    const div = document.createElement("div");
-    div.className = "day-btn disabled"; // estilo uniforme
-    div.style.cursor = "default";
-    div.textContent = name;
-    header.appendChild(div);
-  });
-}
-
-
-function generateDayButtons() {
-  const container = document.getElementById("day-buttons");
-  container.innerHTML = "";
-
-  const today = new Date();
-  const currentWeekDay = today.getDay(); // 0=Dom, 1=Lun...
-
-  // Ajuste para que la semana empiece en Lunes
-  const mondayOffset = (currentWeekDay === 0 ? -6 : 1 - currentWeekDay);
-
-  const selectedLang = lang;
-
-  const createButton = (date, disabled = false) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "day-btn" + (disabled ? " disabled" : "");
-
-    const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
-
-    btn.textContent = `${date.getDate()}/${date.getMonth()+1}`;
-
-
-    if (!disabled) {
-      btn.onclick = () => {
-        document.querySelectorAll(".day-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        btn.dataset.selected = true;
-        btn.dataset.date = date.toISOString().split("T")[0];
-      };
-    }
-
-    container.appendChild(btn);
-  };
-
-  // Semana actual (Lunes–Domingo)
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + mondayOffset + i);
-
-    const weekday = d.getDay(); // 0=Dom, 1=Lun
-    const isPast = d < new Date(today.toDateString());
-    const isClosed = (weekday === 0 || weekday === 1);
-
-    createButton(d, isPast || isClosed);
-
-  }
-
-  // Semana próxima (Lunes–Domingo)
-  for (let i = 7; i < 14; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + mondayOffset + i);
-
-    const weekday = d.getDay();
-    const isClosed = (weekday === 0 || weekday === 1);
-
-    createButton(d, isClosed);
-  }
-
-}
-
-// Re-generar al cambiar idioma
-const originalUpdateLanguage = updateLanguage;
-updateLanguage = function() {
-  originalUpdateLanguage();
-  generateDayHeader();
-  generateDayButtons();
-};
-
-// Obtener fecha seleccionada al enviar
-document.getElementById("reservationForm").addEventListener("submit", function(e){
-  const selected = document.querySelector(".day-btn.active");
-  if (!selected) {
-    alert(texts[lang].requiredError);
-    e.preventDefault();
-    return;
-  }
-
-  const selectedDate = selected.dataset.date;
-  window.selectedDayFormatted = selected.textContent; // Para el mensaje de WhatsApp
-});
-</script>
-
 </body>
 </html>
