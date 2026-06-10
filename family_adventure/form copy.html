@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>San Blas Reserva Ambiental – Family Adventure Reservation - Reserva la aventura familiar</title>
+
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background:#f5f5f5;
+  margin:0;
+  padding:20px;
+  display:flex;
+  justify-content:center;
+}
+
+.card {
+  background:white;
+  padding:24px;
+  border-radius:14px;
+  max-width:420px;
+  width:100%;
+  box-shadow:0 8px 25px rgba(0,0,0,.1);
+}
+
+.logo {
+  width:160px;
+  display:block;
+  margin:0 auto 20px;
+}
+
+h2 {
+  text-align:center;
+  margin:0 0 20px;
+}
+
+label {
+  font-size:14px;
+  margin:10px 0 4px;
+  display:block;
+}
+
+select, input {
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:15px;
+  box-sizing:border-box;
+}
+
+button {
+  margin-top:20px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:999px;
+  background:#25D366;
+  color:#000;
+  font-weight:600;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.lang-switch {
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.lang-switch button {
+  background:#ddd;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.lang-switch button.active {
+  background:#25D366;
+}
+
+/* CARRUSEL */
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  max-height: 160px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+.slide img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.caption {
+  position:absolute;
+  bottom:10px;
+  left:15px;
+  right:15px;
+  color:white;
+  font-weight:600;
+  text-shadow:0 2px 6px rgba(0,0,0,0.7);
+}
+
+/* CONTADORES */
+.counter {
+  display:flex;
+  gap:5px;
+}
+
+.counter button {
+  margin-top:0;
+  width:40px;
+  border-radius:8px;
+  background:#ddd;
+  color:#000;
+}
+
+.counter input {
+  text-align:center;
+}
+
+.info-text {
+  font-size:13px;
+  margin-top:15px;
+  background:#f0f0f0;
+  padding:10px;
+  border-radius:8px;
+}
+
+.day-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.day-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.day-btn.active {
+  background: #25D366;
+  color: #000;
+  font-weight: 600;
+}
+
+.day-btn.disabled {
+  background: #e0e0e0;
+  color: #888;
+  cursor: not-allowed;
+}
+
+</style>
+</head>
+
+<body>
+<div class="card">
+
+<img src="../images/SAN BLAS RESERVA AMBIENTAL LOGO-optimized.webp" class="logo">
+
+<div class="lang-switch">
+  <button id="btn-es" class="active">ES</button>
+  <button id="btn-en">EN</button>
+</div>
+
+<!-- CARRUSEL -->
+<div class="carousel">
+  <div class="slide active">
+    <img src="../images/slide4.webp">
+    <div class="caption" data-es="Descubre San Blas" data-en="Discover San Blas"></div>
+  </div>
+  <div class="slide">
+    <img src="../images/slide3.webp">
+    <div class="caption" data-es="Naturaleza volcánica" data-en="Volcanic nature"></div>
+  </div>
+  <div class="slide">
+    <img src="../images/slide1.webp">
+    <div class="caption" data-es="Experiencia guiada" data-en="Guided experience"></div>
+  </div>
+  <div class="slide">
+    <img src="../images/slide2.webp">
+    <div class="caption" data-es="Historia y cultura" data-en="History & culture"></div>
+  </div>
+</div>
+
+<h2 id="title"></h2>
+
+<form id="reservationForm">
+
+<label id="label-family"></label>
+<input type="text" id="family" required>
+
+<label id="label-day"></label>
+
+<div id="day-buttons" class="day-grid"></div>
+
+
+<label id="label-adults"></label>
+<div class="counter">
+  <button type="button" onclick="changeValue('adults', -1)">-</button>
+  <input type="number" id="adults" min="1" value="1">
+  <button type="button" onclick="changeValue('adults', 1)">+</button>
+</div>
+
+<label id="label-kids"></label>
+<div class="counter">
+  <button type="button" onclick="changeValue('kids', -1)">-</button>
+  <input type="number" id="kids" min="0" value="2">
+  <button type="button" onclick="changeValue('kids', 1)">+</button>
+</div>
+
+<label id="label-room"></label>
+<input type="number" id="room" min="30" max="7000" placeholder="Ej: 123" required>
+
+<div id="room-error" style="display:none;color:red;font-size:12px;"></div>
+
+<div id="info" class="info-text"></div>
+
+<button type="submit" id="send-btn"></button>
+
+</form>
+</div>
+
+<script src="../js/rooms.js"></script>
+<script>
+/* IDIOMA */
+let lang = "es";
+
+const days = {
+  es:["Martes","Miércoles","Jueves","Viernes","Sábado"],
+  en:["Tuesday","Wednesday","Thursday","Friday","Saturday"]
+};
+
+const texts = {
+  es:{
+    title:"Aventura Familiar en San Blas",
+    family:"Alias",
+    day:"Día",
+    adults:"Adultos",
+    kids:"Niños",
+    room:"Número de habitación",
+    info:"Visitas guiadas 09:30. Punto de encuentro: planta 2 edificio principal.\nVisita compuesta de excursión guiada en la Reserva Ambiental, Museo Multimedia y Túnel de la Experiencia Histórica",
+    send:"Enviar por WhatsApp",
+    roomError: "Habitación no válida",
+    requiredError: "Por favor complete todos los campos"
+  },
+  en:{
+    title:"Family Adventure in San Blas",
+    family:"Nickname",
+    day:"Day",
+    adults:"Adults",
+    kids:"Kids",
+    room:"Room number",
+    info:"Guided tours at 09:30. Meeting point: 2nd floor main building.\nVisits composed by a guided hiking in the Reserva Ambiental, Multimedia Museum and Historical Experience Tunnel",
+    send:"Send via WhatsApp",
+    roomError: "Invalid room number",
+    requiredError: "Please fill in all fields"
+  }
+
+};
+
+
+function safeSet(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function updateLanguage(){
+  safeSet("title", texts[lang].title);
+  safeSet("label-family", texts[lang].family);
+  safeSet("label-day", texts[lang].day);
+  safeSet("label-adults", texts[lang].adults);
+  safeSet("label-kids", texts[lang].kids);
+  safeSet("label-room", texts[lang].room);
+  safeSet("info", texts[lang].info);
+  safeSet("send-btn", texts[lang].send);
+
+  const daySelect = document.getElementById("day");
+  if (daySelect) {
+    daySelect.innerHTML = "";
+    days[lang].forEach(d => {
+      const opt = document.createElement("option");
+      opt.textContent = d;
+      daySelect.appendChild(opt);
+    });
+  }
+
+  updateCarouselText();
+
+  document.getElementById("btn-es").classList.toggle("active", lang === "es");
+  document.getElementById("btn-en").classList.toggle("active", lang === "en");
+  document.getElementById("room-error").textContent = texts[lang].roomError;
+}
+
+
+/* BOTONES IDIOMA */
+document.getElementById("btn-es").onclick=()=>{lang="es";updateLanguage();};
+document.getElementById("btn-en").onclick=()=>{lang="en";updateLanguage();};
+
+/* CARRUSEL */
+let currentSlide=0;
+const slides=document.querySelectorAll(".slide");
+
+function updateCarouselText(){
+  document.querySelectorAll(".caption").forEach(c=>{
+    c.textContent=c.dataset[lang];
+  });
+}
+
+setInterval(()=>{
+  slides.forEach(s=>s.classList.remove("active"));
+  currentSlide=(currentSlide+1)%slides.length;
+  slides[currentSlide].classList.add("active");
+},4000);
+
+/* CONTADORES */
+function changeValue(id,delta){
+  const input=document.getElementById(id);
+  let value=parseInt(input.value)||0;
+  value+=delta;
+  if(value<input.min)value=input.min;
+  input.value=value;
+}
+
+/* ENVÍO */
+document.getElementById("reservationForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const family = document.getElementById("family").value;
+  const day = window.selectedDayFormatted;
+  const adults = document.getElementById("adults").value;
+  const kids = document.getElementById("kids").value;
+  const room = document.getElementById("room").value;
+
+  // CAMPOS VACÍOS
+  if (!family || !day || !adults || !kids || !room) {
+    alert(texts[lang].requiredError);
+    return;
+  }
+
+  // HABITACIÓN
+  if(!roomTypes[room]){
+    document.getElementById("room-error").style.display="block";
+    return;
+  }
+
+  document.getElementById("room-error").style.display="none";
+
+  const rlTag = roomTypes[room] === "ROYAL" ? " RL" : "";
+
+  const message = lang === "es"
+    ? `Solicitud de reserva:
+Alias: ${family}
+Día: ${day}
+Adultos: ${adults}
+Niños: ${kids}
+Habitación: ${room}${rlTag}`
+    : `Reservation request:
+Nickname: ${family}
+Day: ${day}
+Adults: ${adults}
+Kids: ${kids}
+Room: ${room}${rlTag}`;
+
+  window.location.href =
+    `https://wa.me/34922097040?text=${encodeURIComponent(message)}`;
+});
+
+/* INIT */
+document.addEventListener("DOMContentLoaded", () => {
+
+  updateLanguage();
+
+  // VALIDACIÓN SEGURA
+  document.getElementById("room").addEventListener("input", function(){
+
+    if (typeof roomTypes === "undefined") {
+      console.error("roomTypes no cargado");
+      return;
+    }
+
+    const val = this.value;
+
+    document.getElementById("room-error").style.display =
+      roomTypes[val] ? "none" : "block";
+  });
+
+});
+
+
+</script>
+<script>
+const dayNames = {
+  es: ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"],
+  en: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+};
+
+function generateDayButtons() {
+  const container = document.getElementById("day-buttons");
+  container.innerHTML = "";
+
+  const today = new Date();
+  const currentWeekDay = today.getDay(); // 0=Dom, 1=Lun...
+
+  // Ajuste para que la semana empiece en Lunes
+  const mondayOffset = (currentWeekDay === 0 ? -6 : 1 - currentWeekDay);
+
+  const selectedLang = lang;
+
+  const createButton = (date, disabled = false) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "day-btn" + (disabled ? " disabled" : "");
+
+    const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
+
+    const label = `${dayNames[selectedLang][dayIndex]} ${date.getDate()}/${date.getMonth()+1}`;
+
+    btn.textContent = label;
+
+    if (!disabled) {
+      btn.onclick = () => {
+        document.querySelectorAll(".day-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        btn.dataset.selected = true;
+        btn.dataset.date = date.toISOString().split("T")[0];
+      };
+    }
+
+    container.appendChild(btn);
+  };
+
+  // Semana actual (Lunes–Domingo)
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + mondayOffset + i);
+
+    const isPast = d < new Date(today.toDateString());
+    createButton(d, isPast);
+  }
+
+  // Semana próxima (Lunes–Domingo)
+  for (let i = 7; i < 14; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + mondayOffset + i);
+    createButton(d, false);
+  }
+}
+
+// Re-generar al cambiar idioma
+const originalUpdateLanguage = updateLanguage;
+updateLanguage = function() {
+  originalUpdateLanguage();
+  generateDayButtons();
+};
+
+// Obtener fecha seleccionada al enviar
+document.getElementById("reservationForm").addEventListener("submit", function(e){
+  const selected = document.querySelector(".day-btn.active");
+  if (!selected) {
+    alert(texts[lang].requiredError);
+    e.preventDefault();
+    return;
+  }
+
+  const selectedDate = selected.dataset.date;
+  window.selectedDayFormatted = selected.textContent; // Para el mensaje de WhatsApp
+});
+</script>
+
+</body>
+</html>
