@@ -415,10 +415,17 @@ document.getElementById("reservationForm").addEventListener("submit", function(e
   const room = document.getElementById("room").value;
 
   // CAMPOS VACÍOS
-  if (!family || !day || !adults || !kids || !room) {
+  if (!family.trim() || !day || !room.trim()) {
     alert(texts[lang].requiredError);
     return;
   }
+
+  // VALIDACIÓN DE ADULTOS (mínimo 1)
+  if (parseInt(adults, 10) < 1) {
+    alert(texts[lang].requiredError);
+    return;
+  }
+
 
   // HABITACIÓN
   if(!roomTypes[room]){
@@ -432,17 +439,17 @@ document.getElementById("reservationForm").addEventListener("submit", function(e
 
   const message = lang === "es"
     ? `Solicitud de reserva:
-Alias: ${family}
-Día: ${day}
-Adultos: ${adults}
-Niños: ${kids}
-Habitación: ${room}${rlTag}`
-    : `Reservation request:
-Nickname: ${family}
-Day: ${day}
-Adults: ${adults}
-Kids: ${kids}
-Room: ${room}${rlTag}`;
+    Alias: ${family}
+    Día: ${day}
+    Adultos: ${adults}
+    Niños: ${kids}
+    Habitación: ${room}${rlTag}`
+        : `Reservation request:
+    Nickname: ${family}
+    Day: ${day}
+    Adults: ${adults}
+    Kids: ${kids}
+    Room: ${room}${rlTag}`;
 
   window.location.href =
     `https://wa.me/34922097040?text=${encodeURIComponent(message)}`;
