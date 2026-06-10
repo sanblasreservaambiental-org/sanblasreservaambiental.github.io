@@ -150,24 +150,31 @@ button {
 .day-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;               /* ← antes 6px */
-  margin-bottom: 4px;     /* ← antes 10px */
+  gap: 3px;               /* más compacto */
+  margin-bottom: 4px;     /* menos espacio entre filas */
 }
 
 .day-btn {
   width: 100%;
-  min-width: 0;              /* ← permite encoger */
-  padding: 6px;
+  min-width: 0;
+  padding: 4px 2px;       /* más compacto */
   border-radius: 6px;
   border: 1px solid #ccc;
   background: white;
   text-align: center;
   cursor: pointer;
-  font-size: 12px;           /* ← más compacto */
-  white-space: normal;       /* ← permite saltos de línea */
-  word-break: break-word;    /* ← evita desbordes */
-  line-height: 1.1;          /* ← más compacto aún */
-  padding: 4px 2px;          /* ← cabe mejor */
+  font-size: 12px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.1;
+}
+
+#day-header .day-btn {
+  background: transparent;
+  border: none;
+  cursor: default;
+  font-size: 11px;        /* cabecera más pequeña */
+  font-weight: 600;
 }
 
 .day-btn.active {
@@ -181,6 +188,7 @@ button {
   color: #888;
   cursor: not-allowed;
 }
+
 
 
 </style>
