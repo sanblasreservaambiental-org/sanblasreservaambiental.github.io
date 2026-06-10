@@ -148,49 +148,26 @@ button {
 }
 
 .day-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;               /* reduce espacio entre columnas y filas */
-  margin-bottom: 0;       /* elimina separación extra */
-}
-
-#day-header {
-  margin: 0 !important;
-  margin-bottom: 2;       /* cabecera pegada a la primera fila */
-}
-
-#day-buttons {
-  row-gap: 2px;           /* compacta verticalmente las semanas */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .day-btn {
-  margin: 0 !important;
-  width: 100%;
-  min-width: 0;
-  padding: 6px;           /* tu tamaño original */
-  border-radius: 6px;
-  border: 1px solid #d4c8b8; /* gris cálido */
+  flex: 1;
+  min-width: 80px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
   background: white;
   text-align: center;
   cursor: pointer;
-  font-size: 14px;        /* tu tamaño original */
-  white-space: normal;
-  word-break: break-word;
-  line-height: 1.1;       /* compacto pero sin deformar */
-}
-
-#day-header .day-btn {
-  background: transparent;
-  border: none;
-  cursor: default;
-  font-weight: 600;
-  padding: 0;
-  line-height: 1;
+  font-size: 14px;
 }
 
 .day-btn.active {
   background: #25D366;
-  border-color: #1ea955;
   color: #000;
   font-weight: 600;
 }
@@ -199,37 +176,6 @@ button {
   background: #e0e0e0;
   color: #888;
   cursor: not-allowed;
-}
-
-#day-header,
-#day-buttons {
-  background: #F5F0E6;
-  padding: 8px;
-  border-radius: 8px;
-}
-
-input, select, textarea {
-  background: #F5F0E6;
-  border: 1px solid #d4c8b8;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 15px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-#label-day {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 4px;
-  color: #2A4E6E; /* azul San Blas */
-}
-
-
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #25D366;
-  background: #fff;
 }
 
 </style>
@@ -273,7 +219,7 @@ input:focus, select:focus, textarea:focus {
 <input type="text" id="family" required>
 
 <label id="label-day"></label>
-<div id="day-header" class="day-grid"></div>
+
 <div id="day-buttons" class="day-grid"></div>
 
 
@@ -408,34 +354,25 @@ function changeValue(id,delta){
 document.getElementById("reservationForm").addEventListener("submit", function(e){
   e.preventDefault();
 
-  const family = document.getElementById("family").value.trim();
+  const family = document.getElementById("family").value;
+  const day = window.selectedDayFormatted;
   const adults = document.getElementById("adults").value;
   const kids = document.getElementById("kids").value;
-  const room = document.getElementById("room").value.trim();
+  const room = document.getElementById("room").value;
 
-  // Obtener día seleccionado
-  const selected = document.querySelector(".day-btn.active");
-  const day = selected ? selected.textContent : "";
-
-  // VALIDACIÓN CAMPOS OBLIGATORIOS
-  if (!family || !day || !room) {
-    alert(texts[lang].requiredError);
-    return;
-  }
-
-  // ADULTOS MÍNIMO 1
-  if (parseInt(adults, 10) < 1) {
+  // CAMPOS VACÍOS
+  if (!family || !day || !adults || !kids || !room) {
     alert(texts[lang].requiredError);
     return;
   }
 
   // HABITACIÓN
-  if (!roomTypes[room]) {
-    document.getElementById("room-error").style.display = "block";
+  if(!roomTypes[room]){
+    document.getElementById("room-error").style.display="block";
     return;
   }
 
-  document.getElementById("room-error").style.display = "none";
+  document.getElementById("room-error").style.display="none";
 
   const rlTag = roomTypes[room] === "ROYAL" ? " RL" : "";
 
@@ -457,13 +394,10 @@ Room: ${room}${rlTag}`;
     `https://wa.me/34922097040?text=${encodeURIComponent(message)}`;
 });
 
-
 /* INIT */
 document.addEventListener("DOMContentLoaded", () => {
 
   updateLanguage();
-  generateDayHeader();
-  generateDayButtons();
 
   // VALIDACIÓN SEGURA
   document.getElementById("room").addEventListener("input", function(){
@@ -489,20 +423,6 @@ const dayNames = {
   en: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
 };
 
-function generateDayHeader() {
-  const header = document.getElementById("day-header");
-  header.innerHTML = "";
-
-  dayNames[lang].forEach(name => {
-    const div = document.createElement("div");
-    div.className = "day-btn disabled"; // estilo uniforme
-    div.style.cursor = "default";
-    div.textContent = name;
-    header.appendChild(div);
-  });
-}
-
-
 function generateDayButtons() {
   const container = document.getElementById("day-buttons");
   container.innerHTML = "";
@@ -522,8 +442,9 @@ function generateDayButtons() {
 
     const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
 
-    btn.textContent = `${date.getDate()}/${date.getMonth()+1}`;
+    const label = `${dayNames[selectedLang][dayIndex]} ${date.getDate()}/${date.getMonth()+1}`;
 
+    btn.textContent = label;
 
     if (!disabled) {
       btn.onclick = () => {
@@ -542,32 +463,22 @@ function generateDayButtons() {
     const d = new Date(today);
     d.setDate(today.getDate() + mondayOffset + i);
 
-    const weekday = d.getDay(); // 0=Dom, 1=Lun
     const isPast = d < new Date(today.toDateString());
-    const isClosed = (weekday === 0 || weekday === 1);
-
-    createButton(d, isPast || isClosed);
-
+    createButton(d, isPast);
   }
 
   // Semana próxima (Lunes–Domingo)
   for (let i = 7; i < 14; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + mondayOffset + i);
-
-    const weekday = d.getDay();
-    const isClosed = (weekday === 0 || weekday === 1);
-
-    createButton(d, isClosed);
+    createButton(d, false);
   }
-
 }
 
 // Re-generar al cambiar idioma
 const originalUpdateLanguage = updateLanguage;
 updateLanguage = function() {
   originalUpdateLanguage();
-  generateDayHeader();
   generateDayButtons();
 };
 
