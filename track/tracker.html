@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,8 +22,6 @@
   <p>Redirecting...</p>
 
   <script>
-    const APPS_SCRIPT_URL = "PASTE_APPS_SCRIPT_URL_HERE";
-
     const params = new URLSearchParams(window.location.search);
 
     const lang = (params.get("lang") || "es").toLowerCase();
@@ -50,29 +48,6 @@
     destination.searchParams.set("utm_campaign", campaign);
     destination.searchParams.set("utm_content", variant);
     destination.searchParams.set("click_id", clickId);
-
-    const trackingData = {
-      lang: lang,
-      campaign: campaign,
-      variant: variant,
-      guide: guide,
-      hotel: hotel,
-      source: source,
-      medium: medium,
-      click_id: clickId,
-      destination: destination.toString(),
-      user_agent: navigator.userAgent,
-      referrer: document.referrer
-    };
-
-    fetch("https://script.google.com/macros/s/AKfycbxY-2644ETFF0Lgq7ubtg-bczGXs8lpIQLKem5qXikGtjQE7PBACYe4R-jeYuQ6mDVkOA/exec", {
-      method: "POST",
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "text/plain"
-      },
-      body: JSON.stringify(trackingData)
-    });
 
     gtag("event", "reservation_redirect", {
       campaign: campaign,
