@@ -22,6 +22,8 @@
   <p>Redirecting...</p>
 
   <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY-2644ETFF0Lgq7ubtg-bczGXs8lpIQLKem5qXikGtjQE7PBACYe4R-jeYuQ6mDVkOA/exec";
+
     const params = new URLSearchParams(window.location.search);
 
     const lang = (params.get("lang") || "es").toLowerCase();
@@ -49,6 +51,33 @@
     destination.searchParams.set("utm_content", variant);
     destination.searchParams.set("click_id", clickId);
 
+    const trackingData = {
+      timestamp: new Date().toISOString(),
+      lang: lang,
+      campaign: campaign,
+      variant: variant,
+      guide: guide,
+      hotel: hotel,
+      source: source,
+      medium: medium,
+      click_id: clickId,
+      destination: destination.toString(),
+      user_agent: navigator.userAgent,
+      referrer: document.referrer,
+      current_url: window.location.href
+    };
+
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      redirect: "follow",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(trackingData)
+    }).catch(function(error) {
+      console.warn("Apps Script tracking failed:", error);
+    });
+
     gtag("event", "reservation_redirect", {
       campaign: campaign,
       variant: variant,
@@ -59,12 +88,13 @@
       medium: medium,
       click_id: clickId,
       destination_url: destination.toString(),
+      page_location: window.location.href,
       transport_type: "beacon"
     });
 
     setTimeout(function () {
       window.location.replace(destination.toString());
-    }, 300);
+    }, 350);
   </script>
 </body>
 </html>
