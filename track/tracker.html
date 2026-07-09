@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Redirecting...</title>
+
+<meta name="robots" content="noindex,nofollow">
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BWQFXFFCRZ"></script>
+
+<script>
+window.dataLayer = window.dataLayer || [];
+
+function gtag(){
+    dataLayer.push(arguments);
+}
+
+gtag('js', new Date());
+
+gtag('config','G-BWQFXFFCRZ');
+</script>
+
+<style>
+
+body{
+
+    font-family:Arial,sans-serif;
+    background:#fff;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    height:100vh;
+
+    color:#555;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+Redirecting...
+
+<script>
+
+const params=new URLSearchParams(window.location.search);
+
+//===============================
+// VARIABLES
+//===============================
+
+const lang=params.get("lang") || "es";
+
+const campaign=params.get("campaign") || "summer2026";
+
+const variant=params.get("variant") || "default";
+
+const guide=params.get("guide") || "unknown";
+
+const hotel=params.get("hotel") || "barcelo_tenerife";
+
+const source=params.get("source") || "inhouse";
+
+const medium=params.get("medium") || "summeredition";
+
+//===============================
+// DESTINO
+//===============================
+
+let destination;
+
+if(lang.toLowerCase()=="en"){
+
+destination=new URL("https://www.barcelo.com/guia-turismo/en/spain/tenerife/experiences/1121/");
+
+}
+else{
+
+destination=new URL("https://www.barcelo.com/guia-turismo/es/espana/tenerife/actividades/1121/");
+
+}
+
+//===============================
+// CLICK ID
+//===============================
+
+let clickId;
+
+if(window.crypto && crypto.randomUUID){
+
+clickId=crypto.randomUUID();
+
+}else{
+
+clickId=Date.now()+"_"+Math.random().toString(36).substring(2);
+
+}
+
+//===============================
+// UTM PARA BARCELÓ
+//===============================
+
+destination.searchParams.set("utm_source",source);
+
+destination.searchParams.set("utm_medium",medium);
+
+destination.searchParams.set("utm_campaign",campaign);
+
+destination.searchParams.set("utm_content",variant);
+
+destination.searchParams.set("click_id",clickId);
+
+//===============================
+// EVENTO GA4
+//===============================
+
+gtag('event','reservation_redirect',{
+
+campaign:campaign,
+
+variant:variant,
+
+guide:guide,
+
+hotel:hotel,
+
+language:lang,
+
+click_id:clickId,
+
+source:source,
+
+medium:medium,
+
+destination_url:destination.toString(),
+
+page_location:window.location.href,
+
+event_callback:function(){
+
+window.location.replace(destination.toString());
+
+}
+
+});
+
+//===============================
+// BACKUP
+//===============================
+
+setTimeout(function(){
+
+window.location.replace(destination.toString());
+
+},1000);
+
+</script>
+
+</body>
+
+</html>
