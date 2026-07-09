@@ -12,18 +12,30 @@
     function gtag(){ dataLayer.push(arguments); }
 
     gtag("js", new Date());
+
     gtag("config", "G-BWQFXFFCRZ", {
       transport_type: "beacon"
     });
   </script>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      color: #555;
+      background: #fff;
+    }
+  </style>
 </head>
 
 <body>
   <p>Redirecting...</p>
 
   <script>
-    const APPS_SCRIPT_URL = "PASTE_APPS_SCRIPT_URL_HERE";
-
     const params = new URLSearchParams(window.location.search);
 
     const lang = (params.get("lang") || "es").toLowerCase();
@@ -51,28 +63,9 @@
     destination.searchParams.set("utm_content", variant);
     destination.searchParams.set("click_id", clickId);
 
-    const trackingData = {
-      lang: lang,
-      campaign: campaign,
-      variant: variant,
-      guide: guide,
-      hotel: hotel,
-      source: source,
-      medium: medium,
-      click_id: clickId,
-      destination: destination.toString(),
-      user_agent: navigator.userAgent,
-      referrer: document.referrer
+    const redirect = () => {
+      window.location.replace(destination.toString());
     };
-
-    fetch(https://script.google.com/macros/s/AKfycbxY-2644ETFF0Lgq7ubtg-bczGXs8lpIQLKem5qXikGtjQE7PBACYe4R-jeYuQ6mDVkOA/exec, {
-      method: "POST",
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "text/plain"
-      },
-      body: JSON.stringify(trackingData)
-    });
 
     gtag("event", "reservation_redirect", {
       campaign: campaign,
@@ -84,12 +77,12 @@
       medium: medium,
       click_id: clickId,
       destination_url: destination.toString(),
-      transport_type: "beacon"
+      page_location: window.location.href,
+      transport_type: "beacon",
+      event_callback: redirect
     });
 
-    setTimeout(function () {
-      window.location.replace(destination.toString());
-    }, 300);
+    setTimeout(redirect, 250);
   </script>
 </body>
 </html>
