@@ -1,169 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Redirecting...</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BWQFXFFCRZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
 
-<title>Redirecting...</title>
+    gtag("js", new Date());
 
-<meta name="robots" content="noindex,nofollow">
+    gtag("config", "G-BWQFXFFCRZ", {
+      transport_type: "beacon"
+    });
+  </script>
 
-<!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BWQFXFFCRZ"></script>
-
-<script>
-window.dataLayer = window.dataLayer || [];
-
-function gtag(){
-    dataLayer.push(arguments);
-}
-
-gtag('js', new Date());
-
-gtag('config','G-BWQFXFFCRZ');
-</script>
-
-<style>
-
-body{
-
-    font-family:Arial,sans-serif;
-    background:#fff;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    height:100vh;
-
-    color:#555;
-
-}
-
-</style>
-
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      color: #555;
+      background: #fff;
+    }
+  </style>
 </head>
 
 <body>
+  <p>Redirecting...</p>
 
-Redirecting...
+  <script>
+    const params = new URLSearchParams(window.location.search);
 
-<script>
+    const lang = (params.get("lang") || "es").toLowerCase();
+    const campaign = params.get("campaign") || "summer2026";
+    const variant = params.get("variant") || "default";
+    const guide = params.get("guide") || "unknown";
+    const hotel = params.get("hotel") || "barcelo_tenerife";
+    const source = params.get("source") || "inhouse";
+    const medium = params.get("medium") || "summeredition";
 
-const params=new URLSearchParams(window.location.search);
+    const destination = new URL(
+      lang === "en"
+        ? "https://www.barcelo.com/guia-turismo/en/spain/tenerife/experiences/1121/"
+        : "https://www.barcelo.com/guia-turismo/es/espana/tenerife/actividades/1121/"
+    );
 
-//===============================
-// VARIABLES
-//===============================
+    const clickId =
+      window.crypto && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Date.now() + "_" + Math.random().toString(36).substring(2);
 
-const lang=params.get("lang") || "es";
+    destination.searchParams.set("utm_source", source);
+    destination.searchParams.set("utm_medium", medium);
+    destination.searchParams.set("utm_campaign", campaign);
+    destination.searchParams.set("utm_content", variant);
+    destination.searchParams.set("click_id", clickId);
 
-const campaign=params.get("campaign") || "summer2026";
+    const redirect = () => {
+      window.location.replace(destination.toString());
+    };
 
-const variant=params.get("variant") || "default";
+    gtag("event", "reservation_redirect", {
+      campaign: campaign,
+      variant: variant,
+      guide: guide,
+      hotel: hotel,
+      language: lang,
+      source: source,
+      medium: medium,
+      click_id: clickId,
+      destination_url: destination.toString(),
+      page_location: window.location.href,
+      transport_type: "beacon",
+      event_callback: redirect
+    });
 
-const guide=params.get("guide") || "unknown";
-
-const hotel=params.get("hotel") || "barcelo_tenerife";
-
-const source=params.get("source") || "inhouse";
-
-const medium=params.get("medium") || "summeredition";
-
-//===============================
-// DESTINO
-//===============================
-
-let destination;
-
-if(lang.toLowerCase()=="en"){
-
-destination=new URL("https://www.barcelo.com/guia-turismo/en/spain/tenerife/experiences/1121/");
-
-}
-else{
-
-destination=new URL("https://www.barcelo.com/guia-turismo/es/espana/tenerife/actividades/1121/");
-
-}
-
-//===============================
-// CLICK ID
-//===============================
-
-let clickId;
-
-if(window.crypto && crypto.randomUUID){
-
-clickId=crypto.randomUUID();
-
-}else{
-
-clickId=Date.now()+"_"+Math.random().toString(36).substring(2);
-
-}
-
-//===============================
-// UTM PARA BARCELÓ
-//===============================
-
-destination.searchParams.set("utm_source",source);
-
-destination.searchParams.set("utm_medium",medium);
-
-destination.searchParams.set("utm_campaign",campaign);
-
-destination.searchParams.set("utm_content",variant);
-
-destination.searchParams.set("click_id",clickId);
-
-//===============================
-// EVENTO GA4
-//===============================
-
-gtag('event','reservation_redirect',{
-
-campaign:campaign,
-
-variant:variant,
-
-guide:guide,
-
-hotel:hotel,
-
-language:lang,
-
-click_id:clickId,
-
-source:source,
-
-medium:medium,
-
-destination_url:destination.toString(),
-
-page_location:window.location.href,
-
-event_callback:function(){
-
-window.location.replace(destination.toString());
-
-}
-
-});
-
-//===============================
-// BACKUP
-//===============================
-
-setTimeout(function(){
-
-window.location.replace(destination.toString());
-
-},1000);
-
-</script>
-
+    setTimeout(redirect, 250);
+  </script>
 </body>
-
 </html>
