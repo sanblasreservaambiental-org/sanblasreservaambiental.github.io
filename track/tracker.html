@@ -6,12 +6,18 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Redirecting...</title>
 
+  <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BWQFXFFCRZ"></script>
+
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
 
     gtag("js", new Date());
+
     gtag("config", "G-BWQFXFFCRZ", {
       transport_type: "beacon"
     });
@@ -22,10 +28,12 @@
   <p>Redirecting...</p>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY-2644ETFF0Lgq7ubtg-bczGXs8lpIQLKem5qXikGtjQE7PBACYe4R-jeYuQ6mDVkOA/exec";
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbxY-2644ETFF0Lgq7ubtg-bczGXs8lpIQLKem5qXikGtjQE7PBACYe4R-jeYuQ6mDVkOA/exec";
 
     const params = new URLSearchParams(window.location.search);
 
+    // Parámetros generales
     const lang = (params.get("lang") || "es").toLowerCase();
     const campaign = params.get("campaign") || "summer2026";
     const variant = params.get("variant") || "default";
@@ -34,25 +42,37 @@
     const source = params.get("source") || "inhouse";
     const medium = params.get("medium") || "summeredition";
 
+    /*
+     * Identificador opaco del destinatario.
+     * No debe contener nombre, correo electrónico, teléfono
+     * ni otros datos personales directamente reconocibles.
+     */
+    const customerId = params.get("cid") || "anonymous";
+
+    // URL de Barceló según el idioma
     const destination = new URL(
       lang === "en"
         ? "https://www.barcelo.com/guia-turismo/en/spain/tenerife/experiences/1121/"
         : "https://www.barcelo.com/guia-turismo/es/espana/tenerife/actividades/1121/"
     );
 
+    // Identificador único de este clic concreto
     const clickId =
       window.crypto && crypto.randomUUID
         ? crypto.randomUUID()
         : Date.now() + "_" + Math.random().toString(36).substring(2);
 
+    // UTM que recibirá Barceló
     destination.searchParams.set("utm_source", source);
     destination.searchParams.set("utm_medium", medium);
     destination.searchParams.set("utm_campaign", campaign);
     destination.searchParams.set("utm_content", variant);
     destination.searchParams.set("click_id", clickId);
 
+    // Datos enviados únicamente a Google Sheets
     const trackingData = {
       timestamp: new Date().toISOString(),
+      customer_id: customerId,
       lang: lang,
       campaign: campaign,
       variant: variant,
@@ -67,17 +87,23 @@
       current_url: window.location.href
     };
 
+    // Registro inmediato en Google Sheets
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
-      redirect: "follow",
+      mode: "no-cors",
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
       },
-      body: JSON.stringify(trackingData)
-    }).catch(function(error) {
+      body: JSON.stringify(trackingData),
+      keepalive: true
+    }).catch(function (error) {
       console.warn("Apps Script tracking failed:", error);
     });
 
+    /*
+     * Evento GA4.
+     * customer_id no se envía a GA4.
+     */
     gtag("event", "reservation_redirect", {
       campaign: campaign,
       variant: variant,
@@ -92,9 +118,10 @@
       transport_type: "beacon"
     });
 
+    // Redirección a Barceló
     setTimeout(function () {
       window.location.replace(destination.toString());
-    }, 350);
+    }, 400);
   </script>
 </body>
 </html>
